@@ -225,6 +225,88 @@ def start_app(y:list)->None:
     while len(y)!= 0:
         procesar= check_parenthesis(y)
         print(procesar)
+    return None
+
+
+#Caso 1 variable
+def checkvar_facing(lista):
+    c = False
+    if len(lista)==2:
+        if lista[0] == "(facing-p":
+            if (lista[1] == ":north)") or (lista[1] == ":south)") or (lista[1] == ":east)") or (lista[1] == ":west)"):
+                    c = True
+    return c
+
+#Caso 2 variable
+def checkvar_can_put(lista, var):
+    c = False
+    if len(lista) == 3:
+        if lista[0] == "(can-put-p":
+            if lista[1] == ":balloons" or lista[1] == ":chips":
+                cadena = lista[2].replace(")","")
+                print(cadena)
+                if cadena in var or check_float(cadena):
+                    c = True
+    return c
+
+#Caso 3 variable
+def checkvar_can_pick(lista, var):
+    c = False
+    if len(lista) == 3:
+        if lista[0] == "(can-pick-p":
+            if lista[1] == ":balloons" or lista[1] == ":chips":
+                cadena = lista[2].replace(")","")
+                print(cadena)
+                if cadena in var or check_float(cadena):
+                    c = True
+    return c
+
+#Caso 4 variable
+def checkvar_can_move(lista):
+    c = False
+    if len(lista) == 2:
+        if lista[0] == "(can-move-p":
+            if (lista[1] == ":north)") or (lista[1] == ":south)") or (lista[1] == ":east)") or (lista[1] == ":west)"):
+                    c = True
+    return c
+
+#Revisa todos los casos 1-4 de variables:
+def checkvar_1_4(lista, var):
+    c = False
+    w = checkvar_facing(lista)
+    x = checkvar_can_put(lista, var)
+    y = checkvar_can_pick(lista, var)
+    z = checkvar_can_move(lista)
+    if x == True or w == True or y == True or z == True:
+        c = True
+    return c
+
+#Revisa el caso 5, el not
+
+def checkvar_none(lista, var):
+    c = True
+    if lista[0] == "(not":
+        nueva_lista = lista[1:len(lista)]
+        cadena = nueva_lista[-1]
+        lista_cambio = list(cadena)
+        lista_cambio[-1] = ""
+        cadena1 = "".join(lista_cambio)
+        nueva_lista[-1] = cadena1
+        if checkvar_1_4(nueva_lista, var) == True:
+            c = True
+    return c
+
+
+
+
+#Revisa los diferentes tipos de condiciones
+
+def check_todas_variables(lista, var):
+    c = False
+    if len(lista) == 3:
+        None
+    return None
+
             
 
                 
@@ -238,6 +320,7 @@ def cargar_datos(nombre: str):
         cadena = cadena + " "+element
     file.close()
     return cadena
+
                 
             
     
