@@ -43,7 +43,8 @@ def check_defvar(lista: list):
             if type(lista[1]) == str:
                 cadena = lista[2]
                 cadena = cadena.replace(")","")
-                c = check_float(cadena)
+                if cadena != lista[2]: 
+                    c = check_float(cadena)
     return c, lista[1]
 #Revisa si el = esta bien
 def check_equal(lista):
@@ -53,7 +54,8 @@ def check_equal(lista):
             if type(lista[1]) == str:
                 cadena = lista[2]
                 cadena = cadena.replace(")","")
-                c = check_float(cadena)
+                if cadena != lista[2]:   
+                    c = check_float(cadena)
     return c #, lista[1] (creo que no hace falta ponerla en la nueva lista de variables aceptadas, porque ya estaba inicializada)
 
 #Revisa move, se arreglo el uso de variables
@@ -63,12 +65,13 @@ def check_move(lista, var):
         if lista[0] == "(move":
             cadena = lista[1]
             cadena = cadena.replace(")","")
-            d = check_float(cadena)
-            e = False
-            if rev_lista(cadena, var):
-                e = True
-            if d == True or e == True:
-                c = True
+            if cadena != lista[1]:
+                d = check_float(cadena)
+                e = False
+                if rev_lista(cadena, var):
+                    e = True
+                if d == True or e == True:
+                    c = True
     return c
 
 
@@ -100,12 +103,13 @@ def check_put(lista, var):
             if lista[1] == ":balloons" or lista[1] == ":chips":
                 cadena = lista[2]
                 cadena = cadena.replace(")","")
-                d = check_float(cadena)
-                e = False
-            if rev_lista(cadena, var):
-                e = True
-            if d == True or e == True:
-                c = True
+                if cadena != lista[2]:
+                    d = check_float(cadena)
+                    e = False
+                if rev_lista(cadena, var):
+                    e = True
+                if d == True or e == True:
+                    c = True
     return c
 
 #Revisa pick, arreglo variables
@@ -116,12 +120,13 @@ def check_pick(lista, var):
             if lista[1] == ":balloons" or lista[1] == ":chips":
                 cadena = lista[2]
                 cadena = cadena.replace(")","")
-                d = check_float(cadena)
-                e = False
-            if rev_lista(cadena, var):
-                e = True
-            if d == True or e == True:
-                c = True
+                if cadena != lista[2]:
+                    d = check_float(cadena)
+                    e = False
+                if rev_lista(cadena, var):
+                    e = True
+                if d == True or e == True:
+                    c = True
     return c
 
 #Revisa move-dir, arreglo variables
@@ -130,18 +135,18 @@ def check_move_dir(lista, var):
     if len(lista) == 3:
         if lista[0] == "(move-dir":
             cadena = lista[1]
-            print(cadena)
             cadena = cadena.replace(")","")
-            d = check_float(cadena)
-            e = False
-            f = False
-            if rev_lista(cadena, var):
-                e = True
-            if d == True or e == True:
-                f = True
-            if f == True:
-                if (lista[2] == ":left)") or (lista[2] == ":right)") or (lista[2] == ":front)") or (lista[2] == ":back)"):
-                    c = True
+            if cadena != lista[1]:
+                d = check_float(cadena)
+                e = False
+                f = False
+                if rev_lista(cadena, var):
+                    e = True
+                if d == True or e == True:
+                    f = True
+                if f == True:
+                    if (lista[2] == ":left)") or (lista[2] == ":right)") or (lista[2] == ":front)") or (lista[2] == ":back)"):
+                        c = True
     return c
 
 
@@ -244,9 +249,9 @@ def checkvar_can_put(lista, var):
         if lista[0] == "(can-put-p":
             if lista[1] == ":balloons" or lista[1] == ":chips":
                 cadena = lista[2].replace(")","")
-                print(cadena)
-                if cadena in var or check_float(cadena):
-                    c = True
+                if cadena != lista[2]:
+                    if cadena in var or check_float(cadena):
+                        c = True
     return c
 
 #Caso 3 variable
@@ -256,8 +261,9 @@ def checkvar_can_pick(lista, var):
         if lista[0] == "(can-pick-p":
             if lista[1] == ":balloons" or lista[1] == ":chips":
                 cadena = lista[2].replace(")","")
-                if cadena in var or check_float(cadena):
-                    c = True
+                if cadena != lista[2]:
+                    if cadena in var or check_float(cadena):
+                        c = True
     return c
 
 #Caso 4 variable
@@ -291,18 +297,28 @@ def checkvar_none(lista, var):
         del lista_cambio[-1]
         cadena1 = "".join(lista_cambio)
         nueva_lista[-1] = cadena1
+        print(nueva_lista)
         if checkvar_1_4(nueva_lista, var) == True:
             c = True
     return c
+
+#Revisa todas las condiciones posibles
+
+def checkvar_todas(lista, var):
+    c = False
+    a = checkvar_none(lista, var)
+    b = checkvar_1_4(lista, var)
+    if a == True or b == True:
+        c = True
+    return c
+
+
 var = ["hola", "uno", "dos"]
 cadena = "(not (can-pick-p :balloons uno))"
-print(checkvar_none(cadena.split(), var))
+print(checkvar_todas(cadena.split(), var))
 
 
-
-
-
-#Revisa los diferentes tipos de condiciones
+#Revisa los diferentes tipos de condicionales
 
 def check_todas_variables(lista, var):
     c = False
