@@ -329,6 +329,13 @@ def check_all_cases_1(lista, var):
     a6 = check_face(lista)
     a7 = check_put(lista, var)
     a8 = check_pick(lista, var)
+    a9 = check_move_dir(lista, var)
+    a10 = check_run_dirs(lista)
+    a11 = check_move_face(lista, var)
+    if a1 == True or a2 == True or a3 == True or a4 == True or a5 == True or a6 == True or a7 == True or a8 == True or a9 == True or a10 == True or a11 == True:
+        c = True
+    return c
+
             
 
                 
