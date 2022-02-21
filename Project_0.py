@@ -318,14 +318,17 @@ cadena = "(not (can-pick-p :balloons uno))"
 print(checkvar_todas(cadena.split(), var))
 
 
-#Revisa los diferentes tipos de condicionales
-
-def check_todas_variables(lista, var):
+#Revisa todos los casos a excepcion de crear funciones y definir variables
+def check_all_cases_1(lista, var):
     c = False
-    if len(lista) == 3:
-        None
-    return None
-
+    a1 = check_defvar(lista)
+    a2 = check_equal(lista)
+    a3 = check_move(lista, var)
+    a4 = check_move_dir(lista, var)
+    a5 =check_turn(lista)
+    a6 = check_face(lista)
+    a7 = check_put(lista, var)
+    a8 = check_pick(lista, var)
             
 
                 
