@@ -229,7 +229,15 @@ def start_app(y:list)->None:
 
                 
 
-    
+#Funcion que convierte un .txt a una cadena con todas las lineas concatenadas.
+def cargar_datos(nombre: str):
+    file = open(nombre, "r")
+    cadena = ""
+    nonempty_lines = [line.strip("\n") for line in file if line != "\n"]
+    for element in nonempty_lines:
+        cadena = cadena + " "+element
+    file.close()
+    return cadena
                 
             
     
