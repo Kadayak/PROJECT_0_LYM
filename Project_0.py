@@ -256,7 +256,6 @@ def checkvar_can_pick(lista, var):
         if lista[0] == "(can-pick-p":
             if lista[1] == ":balloons" or lista[1] == ":chips":
                 cadena = lista[2].replace(")","")
-                print(cadena)
                 if cadena in var or check_float(cadena):
                     c = True
     return c
@@ -284,17 +283,21 @@ def checkvar_1_4(lista, var):
 #Revisa el caso 5, el not
 
 def checkvar_none(lista, var):
-    c = True
+    c = False
     if lista[0] == "(not":
         nueva_lista = lista[1:len(lista)]
         cadena = nueva_lista[-1]
         lista_cambio = list(cadena)
-        lista_cambio[-1] = ""
+        del lista_cambio[-1]
         cadena1 = "".join(lista_cambio)
         nueva_lista[-1] = cadena1
         if checkvar_1_4(nueva_lista, var) == True:
             c = True
     return c
+var = ["hola", "uno", "dos"]
+cadena = "(not (can-pick-p :balloons uno))"
+print(checkvar_none(cadena.split(), var))
+
 
 
 
