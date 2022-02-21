@@ -7,7 +7,7 @@ Created on Sun Feb 20 11:02:03 2022
 
 x = "(if (blocked-p) (move 1) (skip)) (defvar rotate 3)"
 y = x.split()
-print(y)
+#print(y)
 #Revisa si una cadena puede ser convertida a un str
 def check_float(potential_float):
     try:
@@ -27,6 +27,14 @@ def check_functions(lista, x):
 valid = ["(defvar", "(=", "(move", "(turn", "(face", "(put", "(pick", "(move-dir","(run-dirs","(move-face","(skip)","(if","(loop","(repeat", "(defun"]
 conditions = ["(facing-p","(can-put-p","(can-pick-p","(can-move-p", "(not"]
 
+#Funcion para revisar si un elemento esta en una lista. Se implementa al revisar instrucciones que incluyen variables creadas anteriormente.
+def rev_lista(x, lista):
+    v = False
+    if x in lista:
+        v = True
+    return v
+
+
 #Revisa si defvar esta bien.
 def check_defvar(lista: list):
     c = False
@@ -37,7 +45,6 @@ def check_defvar(lista: list):
                 cadena = cadena.replace(")","")
                 c = check_float(cadena)
     return c, lista[1]
-print(check_defvar(y))
 #Revisa si el = esta bien
 def check_equal(lista):
     c = False
@@ -49,15 +56,22 @@ def check_equal(lista):
                 c = check_float(cadena)
     return c #, lista[1] (creo que no hace falta ponerla en la nueva lista de variables aceptadas, porque ya estaba inicializada)
 
-#Revisa move
-def check_move(lista):
+#Revisa move, se arreglo el uso de variables
+def check_move(lista, var):
     c = False
     if len(lista) ==2:
         if lista[0] == "(move":
             cadena = lista[1]
             cadena = cadena.replace(")","")
-            c = check_float(cadena)
+            d = check_float(cadena)
+            e = False
+            if rev_lista(cadena, var):
+                e = True
+            if d == True or e == True:
+                c = True
     return c
+
+
 
 #Revisa turn
 def check_turn(lista):
@@ -77,41 +91,59 @@ def check_face(lista):
                 c = True
     return c
 
-#Revisa put
+#Revisa put, arreglo variables
 
-def check_put(lista):
+def check_put(lista, var):
     c = False
     if len(lista) == 3:
         if lista[0] == "(put":
             if lista[1] == ":balloons" or lista[1] == ":chips":
                 cadena = lista[2]
                 cadena = cadena.replace(")","")
-                c = check_float(cadena)
+                d = check_float(cadena)
+                e = False
+            if rev_lista(cadena, var):
+                e = True
+            if d == True or e == True:
+                c = True
     return c
 
-#Revisa pick
-def check_pick(lista):
+#Revisa pick, arreglo variables
+def check_pick(lista, var):
     c = False
     if len(lista) == 3:
         if lista[0] == "(pick":
             if lista[1] == ":balloons" or lista[1] == ":chips":
                 cadena = lista[2]
                 cadena = cadena.replace(")","")
-                c = check_float(cadena)
+                d = check_float(cadena)
+                e = False
+            if rev_lista(cadena, var):
+                e = True
+            if d == True or e == True:
+                c = True
     return c
 
-#Revisa move-dir
-def check_move_dir(lista):
+#Revisa move-dir, arreglo variables
+def check_move_dir(lista, var):
     c = False
     if len(lista) == 3:
         if lista[0] == "(move-dir":
             cadena = lista[1]
+            print(cadena)
             cadena = cadena.replace(")","")
             d = check_float(cadena)
-            if d == True:
+            e = False
+            f = False
+            if rev_lista(cadena, var):
+                e = True
+            if d == True or e == True:
+                f = True
+            if f == True:
                 if (lista[2] == ":left)") or (lista[2] == ":right)") or (lista[2] == ":front)") or (lista[2] == ":back)"):
                     c = True
     return c
+
 
 #Revisa run-dirs
 
@@ -133,7 +165,7 @@ def check_run_dirs(lista):
                         c = True
     return c
 
-#Revisa move-face
+#Revisa move-face, arreglo variables
 
 def check_move_face(lista, lista_variables):
     c = False
@@ -194,8 +226,6 @@ def start_app(y:list)->None:
         procesar= check_parenthesis(y)
         print(procesar)
             
-#Prueba para push
-    
 
                 
 
