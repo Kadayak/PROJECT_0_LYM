@@ -1,0 +1,6 @@
+(defvar rotate 3)
+(defvar n 3)
+(defvar x 3)
+(put :chips x)
+
+(put :balloons n)

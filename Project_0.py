@@ -38,7 +38,7 @@ def rev_lista(x, lista):
 #Revisa si defvar esta bien.
 def check_defvar(lista: list):
     c = False
-    if len(lista) == 3:
+    if len(lista) >= 3:
         if lista[0] == "(defvar":
             if type(lista[1]) == str:
                 cadena = lista[2]
@@ -222,17 +222,6 @@ def check_parenthesis(lista: list):
 
     return respuesta
 
-def check_ifs(lista: list, condition: list)->bool:
-    pass
-
-def start_app(y:list)->None:
-
-    while len(y)!= 0:
-        procesar= check_parenthesis(y)
-        print(procesar)
-    return None
-
-
 #Caso 1 variable
 def checkvar_facing(lista):
     c = False
@@ -288,7 +277,7 @@ def checkvar_1_4(lista, var):
 
 #Revisa el caso 5, el not
 
-def checkvar_none(lista, var):
+def checkvar_not(lista, var):
     c = False
     if lista[0] == "(not":
         nueva_lista = lista[1:len(lista)]
@@ -306,7 +295,7 @@ def checkvar_none(lista, var):
 
 def checkvar_todas(lista, var):
     c = False
-    a = checkvar_none(lista, var)
+    a = checkvar_not(lista, var)
     b = checkvar_1_4(lista, var)
     if a == True or b == True:
         c = True
@@ -336,9 +325,93 @@ def check_all_cases_1(lista, var):
         c = True
     return c
 
-            
+def check_repeat(lista: list, var_list: list)-> bool:
+    check= False
 
-                
+    if(lista[0] == "(loop"):
+        condicional= lista[1].split()
+
+        if checkvar_todas(condicional, var_list):
+            existe_funcion= buscar_funcion(lista[2].split(), var_list)
+
+            if(existe_funcion[0]==True):
+                check= True
+    
+    return check
+
+def check_repeat_times(lista: list, var_list: list)-> bool:
+    check= False
+
+    if(lista[0] == "(repeat"):
+
+        if check_float(lista[1]) or rev_lista(lista[1], var_list):
+            existe_funcion=  buscar_funcion(lista[3].split(), var_list)
+
+            if (existe_funcion[0]==True):
+                check= True
+
+    return check
+
+def check_conditional(lista: list, var_list: list)-> bool:
+    check= False
+    if(lista[0] == "(if"):
+        condicional= lista[1].split()
+        if(checkvar_todas(condicional, var_list)):
+            existe_funcion1=  buscar_funcion(lista[2].split(), var_list)
+            existe_funcion2=  buscar_funcion(lista[3].split(), var_list)
+            if (existe_funcion1[0]==True) and (existe_funcion2[0]==True):
+                check= True
+
+    return check
+
+#Esta función se encarga de revisar el texto para encontrarle una función a analizar
+def buscar_funcion(lista: list, list_var: list)->list:
+    string= ""
+    check= False
+
+    if(lista[0] == "(defvar"):
+        check, string = check_defvar(lista)
+
+    elif(lista[0] == "(move"):
+        check= check_move(lista, list_var)
+
+    elif(lista[0] == "(turn"):
+        check= check_turn(lista)
+
+    elif(lista[0] == "(face"):
+        check= check_face(lista)
+
+    elif(lista[0] == "(put"):
+        check= check_put(lista, list_var)
+
+    elif(lista[0] == "(pick"):
+        check= check_pick(lista, list_var)
+
+    elif(lista[0] == "(move_dir"):
+        check= check_move_dir(lista, list_var)
+
+    elif(lista[0] == "(run-dirs"):
+        check= check_run_dirs(lista)
+
+    elif(lista[0] == "(move-face"):
+        check= check_move_face(lista, list_var)
+
+    elif(lista[0] == "(not"):
+        check= checkvar_not(lista, list_var)
+
+    elif(lista[0] == "(repeat"):
+        check= check_repeat_times(lista, list_var)
+
+    elif(lista[0] == "(if"):
+        check= check_conditional(lista, list_var)
+
+    elif(lista[0] == "(loop"):
+        check= check_repeat(lista, list_var)
+
+    respuestas= []
+    respuestas.append(check)
+    respuestas.append(string)
+    return respuestas
 
 #Funcion que convierte un .txt a una cadena con todas las lineas concatenadas.
 def cargar_datos(nombre: str):
@@ -350,9 +423,26 @@ def cargar_datos(nombre: str):
     file.close()
     return cadena
 
-                
-            
-    
 
+#Función que corre la app con un ciclo hasta que la lista separada por el .split se acabe
+def correr_app()-> None:
+
+    txt_list= cargar_datos("data.txt").split()
+    list_var= []
+    while len(txt_list) != 0:
+
+        procesar= check_parenthesis(txt_list)
+        procesar_list= procesar.split()
+        print(procesar_list)
+        var_procesada= buscar_funcion(procesar, procesar_list, list_var)
+        if(var_procesada[1] == ""):
+            print(var_procesada[0])
+        else:
+            list_var.append(var_procesada[1])
+            print(var_procesada[0])
+
+
+        
+correr_app()
         
         

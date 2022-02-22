@@ -1,5 +1,3 @@
-<<<<<<< HEAD
 # PROJECT_0_LYM
-=======
-# PROJECT_0_LYM
->>>>>>> c3b489e (Primeros cambios)
+David Fuquen - #FALTA
+Juan Daniel Sepulveda - 202113067
