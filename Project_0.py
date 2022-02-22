@@ -328,7 +328,7 @@ def check_all_cases_1(lista, var):
 def check_repeat(lista: list, var_list: list)-> bool:
     check= False
 
-    if(lista[0] == "(loop"):
+    if(lista[0] == "(loop") and (len(lista) == 3):
         condicional= lista[1].split()
 
         if checkvar_todas(condicional, var_list):
@@ -342,7 +342,7 @@ def check_repeat(lista: list, var_list: list)-> bool:
 def check_repeat_times(lista: list, var_list: list)-> bool:
     check= False
 
-    if(lista[0] == "(repeat"):
+    if(lista[0] == "(repeat") and (len(lista) == 3):
 
         if check_float(lista[1]) or rev_lista(lista[1], var_list):
             existe_funcion=  buscar_funcion(lista[3].split(), var_list)
@@ -354,7 +354,7 @@ def check_repeat_times(lista: list, var_list: list)-> bool:
 
 def check_conditional(lista: list, var_list: list)-> bool:
     check= False
-    if(lista[0] == "(if"):
+    if(lista[0] == "(if") and (len(lista) == 3):
         condicional= lista[1].split()
         if(checkvar_todas(condicional, var_list)):
             existe_funcion1=  buscar_funcion(lista[2].split(), var_list)
@@ -363,6 +363,9 @@ def check_conditional(lista: list, var_list: list)-> bool:
                 check= True
 
     return check
+
+def check_function_def(lista: list, var_list: list)-> bool:
+    pass
 
 #Esta función se encarga de revisar el texto para encontrarle una función a analizar
 def buscar_funcion(lista: list, list_var: list)->list:
