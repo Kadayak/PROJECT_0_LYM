@@ -60,3 +60,4 @@
 (repeat 7 ((put :balloons 1) (put :balloons 1)))
 (repeat 7 ((put :balloons 1) (put :balloons 1)))
 (repeat 9 ((put :balloons 1) (put :balloons 1)))
+(defun foo (c p) ((put :balloons 1) (put :balloons 1)))

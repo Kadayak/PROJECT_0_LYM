@@ -294,7 +294,6 @@ def checkvar_not(lista, var):
         del lista_cambio[-1]
         cadena1 = "".join(lista_cambio)
         nueva_lista[-1] = cadena1
-        print(nueva_lista)
         if checkvar_1_4(nueva_lista, var) == True:
             c = True
     return c
@@ -396,18 +395,14 @@ def check_conditional(lista: list, var_list: list)-> bool:
 
     return check
 
-def check_function_def(lista: list, fun_list: list)-> bool:
-    check= False
-    if("(defun" in lista[0]):
-        n_funcion= lista[1]
-        fun_list.append(n_funcion)
+def check_function_def(lista: list, var_list: list)-> bool:
+    pass
+            
 
 #Esta función se encarga de revisar el texto para encontrarle una función a analizar
 def buscar_funcion(lista: list, list_var: list)->list:
     string= ""
     check= False
-
-    
 
     if("(run-dirs" in lista[0]):
         check= check_run_dirs(lista)
