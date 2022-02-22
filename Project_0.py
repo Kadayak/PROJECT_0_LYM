@@ -15,7 +15,12 @@ def check_float(potential_float):
         return True
     except ValueError:
         return False
-    
+
+def check_skip(lista: list)-> bool:
+    check= False
+    if "(skip" in lista[0]:
+        check= True
+    return check
 
 def check_functions(lista, x):
     check = False
@@ -24,7 +29,7 @@ def check_functions(lista, x):
             check = True
     return check
 
-valid = ["(defvar", "(=", "(move", "(turn", "(face", "(put", "(pick", "(move-dir","(run-dirs","(move-face","(skip)","(if","(loop","(repeat", "(defun"]
+valid = ["(defvar", "(=", "(move", "(turn", "(face", "(put", "(pick", "(move-dir","(run-dirs","(move-face","(skip","(if","(loop","(repeat", "(defun"]
 conditions = ["(facing-p","(can-put-p","(can-pick-p","(can-move-p", "(not"]
 
 #Funcion para revisar si un elemento esta en una lista. Se implementa al revisar instrucciones que incluyen variables creadas anteriormente.
@@ -81,7 +86,7 @@ def check_turn(lista):
     c = False
     if len(lista) ==2:
         if lista[0] == "(turn":
-            if (lista[1] == ":left)") or (lista[1] == ":right)") or (lista[1] == ":around)"):
+            if (":left)" in lista[1]) or (":right)" in lista[1]) or (":around)" in lista[1]):
                 c = True
     return c
 
@@ -90,7 +95,7 @@ def check_face(lista):
     c = False
     if len(lista) ==2:
         if lista[0] == "(face":
-            if (lista[1] == ":north)") or (lista[1] == ":south)") or (lista[1] == ":east)") or (lista[1] == ":west)"):
+            if (":north)" in lista[1]) or (":south)" in lista[1]) or (":east)" in lista[1]) or (":west)" in lista[1]):
                 c = True
     return c
 
@@ -145,7 +150,7 @@ def check_move_dir(lista, var):
                 if d == True or e == True:
                     f = True
                 if f == True:
-                    if (lista[2] == ":left)") or (lista[2] == ":right)") or (lista[2] == ":front)") or (lista[2] == ":back)"):
+                    if (":left)" in lista[2]) or (":right)" in lista[2]) or (":front)" in lista[2]) or (":back)" in lista[2]):
                         c = True
     return c
 
@@ -176,7 +181,7 @@ def check_move_face(lista, lista_variables):
     c = False
     if lista[0] == "(move-face":
         if lista[1] in lista_variables or check_float(lista[1]):
-            if (lista[2] == ":north)") or (lista[2] == ":south)") or (lista[2] == ":east)") or (lista[2] == ":west)"):
+            if (":north)" in lista[2]) or (":south)" in lista[2]) or (":east)" in lista[2]) or (":west)" in lista[2]):
                     c = True
     return c
 
@@ -227,7 +232,7 @@ def checkvar_facing(lista):
     c = False
     if len(lista)==2:
         if lista[0] == "(facing-p":
-            if (lista[1] == ":north)") or (lista[1] == ":south)") or (lista[1] == ":east)") or (lista[1] == ":west)"):
+            if (":north)" in lista[1]) or (":south)" in lista[1]) or (":east)" in lista[1]) or (":west)" in lista[1]):
                     c = True
     return c
 
@@ -260,7 +265,7 @@ def checkvar_can_move(lista):
     c = False
     if len(lista) == 2:
         if lista[0] == "(can-move-p":
-            if (lista[1] == ":north)") or (lista[1] == ":south)") or (lista[1] == ":east)") or (lista[1] == ":west)"):
+            if (":north)" in lista[1]) or (":south)" in lista[1]) or (":east)" in lista[1]) or (":west)" in lista[1]):
                     c = True
     return c
 
@@ -328,7 +333,7 @@ def check_all_cases_1(lista, var):
 def check_repeat(lista: list, var_list: list)-> bool:
     check= False
 
-    if(lista[0] == "(loop") and (len(lista) == 3):
+    if(lista[0] == "(loop"):
         condicional= lista[1].split()
 
         if checkvar_todas(condicional, var_list):
@@ -342,7 +347,7 @@ def check_repeat(lista: list, var_list: list)-> bool:
 def check_repeat_times(lista: list, var_list: list)-> bool:
     check= False
 
-    if(lista[0] == "(repeat") and (len(lista) == 3):
+    if(lista[0] == "(repeat"):
 
         if check_float(lista[1]) or rev_lista(lista[1], var_list):
             existe_funcion=  buscar_funcion(lista[3].split(), var_list)
@@ -354,7 +359,7 @@ def check_repeat_times(lista: list, var_list: list)-> bool:
 
 def check_conditional(lista: list, var_list: list)-> bool:
     check= False
-    if(lista[0] == "(if") and (len(lista) == 3):
+    if(lista[0] == "(if"):
         condicional= lista[1].split()
         if(checkvar_todas(condicional, var_list)):
             existe_funcion1=  buscar_funcion(lista[2].split(), var_list)
@@ -410,6 +415,9 @@ def buscar_funcion(lista: list, list_var: list)->list:
 
     elif(lista[0] == "(loop"):
         check= check_repeat(lista, list_var)
+
+    elif("skip" in lista[0]):
+        check= check_skip(lista)
 
     respuestas= []
     respuestas.append(check)
