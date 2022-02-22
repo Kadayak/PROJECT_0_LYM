@@ -138,20 +138,19 @@ def check_pick(lista, var):
 def check_move_dir(lista, var):
     c = False
     if len(lista) == 3:
-        if lista[0] == "(move-dir":
+        if "(move-dir" in lista[0]:
             cadena = lista[1]
             cadena = cadena.replace(")","")
-            if cadena != lista[1]:
-                d = check_float(cadena)
-                e = False
-                f = False
-                if rev_lista(cadena, var):
-                    e = True
-                if d == True or e == True:
-                    f = True
-                if f == True:
-                    if (":left)" in lista[2]) or (":right)" in lista[2]) or (":front)" in lista[2]) or (":back)" in lista[2]):
-                        c = True
+            d = check_float(cadena)
+            e = False
+            f = False 
+            if rev_lista(cadena, var):
+                e = True
+            if d == True or e == True:
+                f = True
+            if f == True:
+                if (":left)" in lista[2]) or (":right)" in lista[2]) or (":front)" in lista[2]) or (":back)" in lista[2]):
+                    c = True              
     return c
 
 
@@ -159,10 +158,10 @@ def check_move_dir(lista, var):
 
 def check_run_dirs(lista):
     c = False
-    if lista[0] == "(run-dirs":
-        if (lista[1] == "(:left") or (lista[1] == "(:right") or (lista[1] == "(:up") or (lista[1] == "(:down"):
+    if "(run-dirs" in lista[0]:
+        if (lista[1] == ":left") or (lista[1] == ":right") or (lista[1] == ":up") or (lista[1] == ":down"):
             z = 0
-            for i in range(2,len(lista)-2):
+            for i in range(2,len(lista)-1):
                 lista1 = []
                 x = 0
                 if (lista[i] == ":left") or (lista[i] == ":right") or (lista[i] == ":up") or (lista[i] == ":down"):
@@ -171,7 +170,7 @@ def check_run_dirs(lista):
                 lista1.append(x)
                 if z == len(lista1):
                     w = len(lista)-1
-                    if (lista[w] == ":left))") or (lista[w] == ":right))") or (lista[w] == ":up))") or (lista[w] == ":down))"):
+                    if (lista[w] == ":left)") or (lista[w] == ":right)") or (lista[w] == ":up)") or (lista[w] == ":down)"):
                         c = True
     return c
 
@@ -179,10 +178,11 @@ def check_run_dirs(lista):
 
 def check_move_face(lista, lista_variables):
     c = False
-    if lista[0] == "(move-face":
+ 
+    if "(move-face" in lista[0]:
         if lista[1] in lista_variables or check_float(lista[1]):
             if (":north)" in lista[2]) or (":south)" in lista[2]) or (":east)" in lista[2]) or (":west)" in lista[2]):
-                    c = True
+                c = True
     return c
 
 def check_parenthesis(lista: list):
@@ -284,8 +284,11 @@ def checkvar_1_4(lista, var):
 
 def checkvar_not(lista, var):
     c = False
-    if lista[0] == "(not":
-        nueva_lista = lista[1:len(lista)]
+    if "(not" in lista[0]:
+        lista[0]= lista[0].replace("(not", "")
+        if '(if' in lista[0]:
+            lista[0]=lista[0].replace("(if", "")
+        nueva_lista = lista[0:len(lista)]
         cadena = nueva_lista[-1]
         lista_cambio = list(cadena)
         del lista_cambio[-1]
@@ -305,12 +308,6 @@ def checkvar_todas(lista, var):
     if a == True or b == True:
         c = True
     return c
-
-
-var = ["hola", "uno", "dos"]
-cadena = "(not (can-pick-p :balloons uno))"
-print(checkvar_todas(cadena.split(), var))
-
 
 #Revisa todos los casos a excepcion de crear funciones y definir variables
 def check_all_cases_1(lista, var):
@@ -333,23 +330,24 @@ def check_all_cases_1(lista, var):
 def check_repeat(lista: list, var_list: list)-> bool:
     check= False
 
-    if(lista[0] == "(loop"):
-        condicional= lista[1].split()
-
-        if checkvar_todas(condicional, var_list):
-            existe_funcion= buscar_funcion(lista[2].split(), var_list)
-
-            if(existe_funcion[0]==True):
-                check= True
+    if("(loop" in lista[0]):
+        lista[0]= lista[0].replace("(loop", "")
+        listas = sub_list_creator(lista, 0)
+        contador= 0
+        for n in range(0, len(listas)):
+            if(buscar_funcion(listas[n], var_list)) or (checkvar_todas(listas[n], var_list)):
+                contador+=1
+        if contador == len(listas):
+            check= True
     
     return check
 
 def check_n_parameters(var: str)->int:
     x=0
 
-    if("(put" in var) or ("(pick" in var) or ("(move-dir" in var) or ("(move-face" in var):
+    if("(put" in var) or ("(pick" in var) or ("(move-dir" in var) or ("(move-face" in var) or ("(can-put-p" in var) or ("(can-pick-p" in var):
         x=3
-    elif("(move" in var) or ("(turn" in var) or ("(face" in var):
+    elif("(move" in var) or ("(turn" in var) or ("(face" in var) or ("(facing-p" in var) or ("(can-move-p" in var):
         x=2
     return x
         
@@ -375,7 +373,6 @@ def check_repeat_times(lista: list, var_list: list)-> bool:
 
         if check_float(lista[1]) or rev_lista(lista[1], var_list):
             listas = sub_list_creator(lista, 2)
-            print(listas)
             contador= 0
             for n in range(0, len(listas)):
                 if(buscar_funcion(listas[n], var_list)):
@@ -387,65 +384,72 @@ def check_repeat_times(lista: list, var_list: list)-> bool:
 
 def check_conditional(lista: list, var_list: list)-> bool:
     check= False
-    if(lista[0] == "(if"):
-        condicional= lista[1].split()
-        if(checkvar_todas(condicional, var_list)):
-            existe_funcion1=  buscar_funcion(lista[2].split(), var_list)
-            existe_funcion2=  buscar_funcion(lista[3].split(), var_list)
-            if (existe_funcion1[0]==True) and (existe_funcion2[0]==True):
-                check= True
+    if("(if" in lista[0]):
+        lista[0]= lista[0].replace("(if", "")
+        listas = sub_list_creator(lista, 0)
+        contador= 0
+        for n in range(0, len(listas)):
+            if(buscar_funcion(listas[n], var_list)) or (checkvar_todas(listas[n], var_list)):
+                contador+=1
+        if contador == len(listas):
+            check= True
 
     return check
 
-def check_function_def(lista: list, var_list: list)-> bool:
-    pass
+def check_function_def(lista: list, fun_list: list)-> bool:
+    check= False
+    if("(defun" in lista[0]):
+        n_funcion= lista[1]
+        fun_list.append(n_funcion)
 
 #Esta función se encarga de revisar el texto para encontrarle una función a analizar
 def buscar_funcion(lista: list, list_var: list)->list:
     string= ""
     check= False
 
-    if(lista[0] == "(defvar"):
+    
+
+    if("(run-dirs" in lista[0]):
+        check= check_run_dirs(lista)
+
+    if("(defvar" in lista[0]):
         check, string = check_defvar(lista)
 
-    elif(lista[0] == "(move"):
-        check= check_move(lista, list_var)
+    elif("(move-dir" in lista[0]):
+        check= check_move_dir(lista, list_var)
 
-    elif(lista[0] == "(turn"):
+    elif("(turn" in lista[0]):
         check= check_turn(lista)
 
-    elif(lista[0] == "(face"):
+    elif("(face" in lista[0]):
         check= check_face(lista)
 
     elif("(put" in lista[0]):
         check= check_put(lista, list_var)
 
-    elif(lista[0] == "(pick"):
+    elif("(pick" in lista[0]):
         check= check_pick(lista, list_var)
 
-    elif(lista[0] == "(move_dir"):
-        check= check_move_dir(lista, list_var)
-
-    elif(lista[0] == "(run-dirs"):
-        check= check_run_dirs(lista)
-
-    elif(lista[0] == "(move-face"):
+    elif("(move-face" in lista[0]):
         check= check_move_face(lista, list_var)
 
-    elif(lista[0] == "(not"):
-        check= checkvar_not(lista, list_var)
-
-    elif(lista[0] == "(repeat"):
-        check= check_repeat_times(lista, list_var)
-
-    elif(lista[0] == "(if"):
+    elif("(if" in lista[0]):
         check= check_conditional(lista, list_var)
 
-    elif(lista[0] == "(loop"):
+    elif("(not" in lista[0]):
+        check= checkvar_not(lista, list_var)
+
+    elif("(repeat" in lista[0]):
+        check= check_repeat_times(lista, list_var)
+
+    elif("(loop" in lista[0]):
         check= check_repeat(lista, list_var)
 
     elif("skip" in lista[0]):
         check= check_skip(lista)
+
+    elif("(move" in lista[0]):
+        check= check_move(lista, list_var)
 
     respuestas= []
     respuestas.append(check)
@@ -472,7 +476,6 @@ def correr_app()-> None:
 
         procesar= check_parenthesis(txt_list)
         procesar_list= procesar.split()
-        print(procesar)
         print(procesar_list)
         var_procesada= buscar_funcion(procesar_list, list_var)
 
