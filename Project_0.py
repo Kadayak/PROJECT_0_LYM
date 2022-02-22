@@ -104,7 +104,7 @@ def check_face(lista):
 def check_put(lista, var):
     c = False
     if len(lista) == 3:
-        if lista[0] == "(put":
+        if "(put" in lista[0]:
             if lista[1] == ":balloons" or lista[1] == ":chips":
                 cadena = lista[2]
                 cadena = cadena.replace(")","")
@@ -220,7 +220,7 @@ def check_parenthesis(lista: list):
     for palabras in procesamiento:
         if(palabras[0] == "("):
             respuesta += palabras
-        elif(palabras[0] != "(") and (palabras[-1] != ")"):
+        elif(palabras[0] != "(") and (palabras[-1] != ") "):
             respuesta += " " + palabras + " "
         elif(palabras[-1] == ")"):
             respuesta+= palabras
@@ -344,15 +344,43 @@ def check_repeat(lista: list, var_list: list)-> bool:
     
     return check
 
+def check_n_parameters(var: str)->int:
+    x=0
+
+    if("(put" in var) or ("(pick" in var) or ("(move-dir" in var) or ("(move-face" in var):
+        x=3
+    elif("(move" in var) or ("(turn" in var) or ("(face" in var):
+        x=2
+    return x
+        
+def sub_list_creator(lista: list, posicion1: int)->list:
+    x= 0
+    counter= posicion1
+    respuestas= []
+
+    while counter < len(lista):
+        x= check_n_parameters(lista[counter])
+        sub_list= lista[counter: counter+x]
+        respuestas.append(sub_list)
+        counter= x + counter
+        if x == 0:
+            break
+
+    return respuestas
+
 def check_repeat_times(lista: list, var_list: list)-> bool:
     check= False
 
     if(lista[0] == "(repeat"):
 
         if check_float(lista[1]) or rev_lista(lista[1], var_list):
-            existe_funcion=  buscar_funcion(lista[3].split(), var_list)
-
-            if (existe_funcion[0]==True):
+            listas = sub_list_creator(lista, 2)
+            print(listas)
+            contador= 0
+            for n in range(0, len(listas)):
+                if(buscar_funcion(listas[n], var_list)):
+                    contador+=1
+            if contador == len(listas):
                 check= True
 
     return check
@@ -389,7 +417,7 @@ def buscar_funcion(lista: list, list_var: list)->list:
     elif(lista[0] == "(face"):
         check= check_face(lista)
 
-    elif(lista[0] == "(put"):
+    elif("(put" in lista[0]):
         check= check_put(lista, list_var)
 
     elif(lista[0] == "(pick"):
@@ -444,8 +472,10 @@ def correr_app()-> None:
 
         procesar= check_parenthesis(txt_list)
         procesar_list= procesar.split()
+        print(procesar)
         print(procesar_list)
-        var_procesada= buscar_funcion(procesar, procesar_list, list_var)
+        var_procesada= buscar_funcion(procesar_list, list_var)
+
         if(var_procesada[1] == ""):
             print(var_procesada[0])
         else:
