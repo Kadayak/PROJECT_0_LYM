@@ -2,5 +2,4 @@
 (defvar n 3)
 (defvar x 3)
 (put :chips x)
-
-(put :balloons n)
+(repeat 5 ((put :balloons 1) (put :balloons 1)))
